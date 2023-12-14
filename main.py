@@ -1,5 +1,6 @@
 from settings import *
 from tetris import *
+from preview import *
 import sys
 
 
@@ -10,6 +11,7 @@ class App:
         self.screen = pg.display.set_mode(WIN_RES)
         self.clock = pg.time.Clock()
         self.set_timer()
+        self.preview = Preview()
         self.tetris = Tetris(self)
         self.text = Text(self)
 
@@ -28,8 +30,8 @@ class App:
     def draw(self):
         self.screen.fill(color=BLACK)
         self.screen.fill(color=GREY, rect=(0, 0, *GRID_SIZE))
-
         self.tetris.draw()
+        self.preview.draw()
         self.text.draw()
         pg.display.flip()
 
