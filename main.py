@@ -1,6 +1,7 @@
 from settings import *
 from tetris import *
 from preview import *
+from sidebar import *
 import sys
 
 
@@ -11,9 +12,11 @@ class App:
         self.screen = pg.display.set_mode(WIN_RES)
         self.clock = pg.time.Clock()
         self.set_timer()
-        self.preview = Preview()
+        font = ft.Font(FONT_PATH)
+        self.preview = Preview(font)
         self.tetris = Tetris(self)
-        self.text = Text(self)
+        self.sidebar = Sidebar(self, font)
+        # self.text = Text(self)
 
     def set_timer(self):
         self.user_event = pg.USEREVENT + 0
@@ -32,7 +35,8 @@ class App:
         self.screen.fill(color=GREY, rect=(0, 0, *GRID_SIZE))
         self.tetris.draw()
         self.preview.draw()
-        self.text.draw()
+        self.sidebar.draw()
+        # self.text.draw()
         pg.display.flip()
 
     def check_events(self):
