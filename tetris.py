@@ -38,7 +38,7 @@ class Text:
         self.font.render_to(
             self.app.screen,
             (SCREEN_WIDTH + (MENU_WIDHT * TILE_SIZE // 2) - 40, WIN_HEIGHT * 0.440),
-            text=f'{self.app.tetris.score}',
+            text=f"{self.app.tetris.score}",
             fgcolor=WHITE,
             size=TILE_SIZE * 0.8,
             bgcolor=BLACK,
@@ -46,7 +46,7 @@ class Text:
         self.font.render_to(
             self.app.screen,
             (SCREEN_WIDTH + (MENU_WIDHT * TILE_SIZE // 2) - 40, WIN_HEIGHT * 0.480),
-            text='Level',
+            text="Level",
             fgcolor=WHITE,
             size=TILE_SIZE * 0.8,
             bgcolor=BLACK,
@@ -54,7 +54,7 @@ class Text:
         self.font.render_to(
             self.app.screen,
             (SCREEN_WIDTH + (MENU_WIDHT * TILE_SIZE // 2) - 40, WIN_HEIGHT * 0.520),
-            text=f'{self.app.tetris.level}',
+            text=f"{self.app.tetris.level}",
             fgcolor=WHITE,
             size=TILE_SIZE * 0.8,
             bgcolor=BLACK,
@@ -66,21 +66,41 @@ class Tetris:
         self.app = app
         self.sprite_group = pg.sprite.Group()
         self.field_array = self.get_field_array()
-        self.tetromino = Tetromino(self)
-        self.next_tetromino = Tetromino(self, current=False)
         self.speed_up = False
+
+        self.current_bag = list(TETROMINOES.keys())
+        random.shuffle(self.current_bag)
+        self.next_bag = list(TETROMINOES.keys())
+        random.shuffle(self.next_bag)
+
+        self.next_shapes = [self.current_bag.pop(0) for _ in range(3)]
+
+        self.tetromino = self.create_new_tetromino()
+        self.next_tetromino = self.create_new_tetromino(current=False)
 
         self.score = 0
         self.level = 1
         self.full_lines = 0
         self.lines_completed = 0
-        self.points_per_line = {0:0,1:100, 2:300, 3:500, 4:800}
+        self.points_per_line = {0: 0, 1: 100, 2: 300, 3: 500, 4: 800}
 
     def get_score(self):
         self.score += self.points_per_line[self.full_lines] * self.level
         self.full_lines = 0
 
-    
+    def create_new_tetromino(self, current=True):
+        shape = self.get_next_shape()
+        print(shape)
+        return Tetromino(self, shape, current=current)
+
+    def get_next_shape(self):
+        next_shape = self.next_shapes.pop(0)
+        next_in_bag = self.current_bag.pop(0)
+        self.next_shapes.append(next_in_bag)
+        if len(self.current_bag) <= 3:
+            self.current_bag.extend(self.next_bag)
+            random.shuffle(self.next_bag)
+        return next_shape
 
     def check_full_lines(self):
         row = GRID_HEIGHT - 1
@@ -122,7 +142,8 @@ class Tetris:
                 self.next_tetromino.current = True
                 self.put_tetromino_in_field_array()
                 self.tetromino = self.next_tetromino
-                self.next_tetromino = Tetromino(self, current=False)
+                self.next_tetromino = self.create_new_tetromino(current=False)
+
 
     def control(self, pressed_key):
         if pressed_key == pg.K_LEFT:
