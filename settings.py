@@ -8,27 +8,35 @@ FPS = 60
 ANIM_TIME_INTERVAL = 150
 FAST_ANIM_TIME_INTERVAL = 15
 
-GRID_WIDTH = 10
-GRID_HEIGHT = 20
-TILE_SIZE = 35
-MENU_WIDHT = 8
+TETRIS_GRID_W = 10
+TETRIS_GRID_H = 20
+TILE_SIZE = 32
+MENU_SIZE_W = 8
+BOTTOM_SIZE_H = 4
 
+TETRIS_WIDTH = TETRIS_GRID_W * TILE_SIZE
+TETRIS_HEIGHT = TETRIS_GRID_H * TILE_SIZE
 
-SCREEN_WIDTH = GRID_WIDTH * TILE_SIZE
-SCREEN_HEIGHT = GRID_HEIGHT * TILE_SIZE
-GRID_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT
+MENU_WIDTH = MENU_SIZE_W * TILE_SIZE
+MENU_HEIGHT = TETRIS_HEIGHT
 
+BOTTOM_WIDTH = TETRIS_WIDTH
+BOTTOM_HEIGHT = BOTTOM_SIZE_H * TILE_SIZE
 
-WIN_WIDTH = GRID_SIZE[0] + MENU_WIDHT * TILE_SIZE
-WIN_HEIGHT = GRID_SIZE[1]
+GRID_SIZE = TETRIS_WIDTH, TETRIS_HEIGHT
+
+WIN_WIDTH = GRID_SIZE[0] + MENU_WIDTH
+WIN_HEIGHT = GRID_SIZE[1] + 8 * TILE_SIZE
 WIN_RES = WIN_WIDTH, WIN_HEIGHT
-GRID_START_W = WIN_WIDTH - SCREEN_WIDTH
-GRID_START_H = WIN_HEIGHT - SCREEN_HEIGHT
+GRID_START_W = WIN_WIDTH - TETRIS_WIDTH
+GRID_START_H = WIN_HEIGHT - TETRIS_HEIGHT
 
 FONT_PATH = "assets/font/PixelGosub-ZaRz.ttf"
+SPRITE_BLOCK_PATH = "assets/sprites/blocks"
+SPRITE_TETROMINOES_PATH = "assets/sprites/tetrominoes"
 
-INIT_POS_OFFSET = vec((GRID_WIDTH // 2 - 1, 0))
-NEXT_POS_OFFSET = vec((GRID_WIDTH * 1.35, GRID_HEIGHT * 0.290))
+INIT_POS_OFFSET = vec((TETRIS_GRID_W // 2 - 1, 0))
+NEXT_POS_OFFSET = vec((TETRIS_GRID_W * 1.30, TETRIS_GRID_H * 0.280))
 
 MOVE_DIRECTIONS = {"left": vec(-1, 0), "right": vec(1, 0), "down": vec(0, 1)}
 
@@ -46,20 +54,25 @@ TETROMINOES = {
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREY = (32, 32, 32)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
-CYAN = (0, 255, 255)
-MAGENTA = (255, 0, 255)
-ORANGE = (255, 165, 0)
+
 
 TETROMINOES_COLORS = {
-    "T": MAGENTA,
-    "O": YELLOW,
-    "J": BLUE,
-    "L": ORANGE,
-    "I": CYAN,
-    "S": GREEN,
-    "Z": RED,
+    "T": "MAGENTA",
+    "O": "YELLOW",
+    "J": "BLUE",
+    "L": "ORANGE",
+    "I": "CYAN",
+    "S": "GREEN",
+    "Z": "RED",
+}
+
+WALL_KICKS = {
+    "0R": [(-1, 0), (-1, -1), (0, 2), (-1, 2)],
+    "0L": [(1, 0), (1, -1), (0, 2), (1, 2)],
+    "R0": [(1, 0), (1, 1), (0, -2), (1, -2)],
+    "R2": [(-1, 0), (-1, 1), (0, -2), (-1, -2)],
+    "L0": [(-1, 0), (-1, 1), (0, -2), (-1, -2)],
+    "L2": [(1, 0), (1, 1), (0, -2), (1, -2)],
+    "2R": [(1, 0), (1, -1), (0, 2), (1, 2)],
+    "2L": [(-1, 0), (-1, -1), (0, 2), (-1, 2)],
 }
