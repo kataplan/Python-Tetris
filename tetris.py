@@ -139,9 +139,16 @@ class Tetris:
             self.tetromino.rotate()
         elif pressed_key == pg.K_DOWN:
             self.speed_up = True
+        elif pressed_key == pg.K_SPACE:  # Barra espaciadora para hard drop
+            self.hard_drop()
         elif pressed_key == pg.K_LSHIFT or pressed_key == pg.K_c:
             if self.can_hold:
                 self.hold()
+
+    def hard_drop(self):
+        while not self.tetromino.landing:
+            self.tetromino.move("down")
+        self.check_tetromino_landing()
 
     def draw_grid(self):
         for x in range(TETRIS_GRID_W):
