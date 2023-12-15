@@ -11,7 +11,8 @@ class Block(pg.sprite.Sprite):
         super().__init__(tetromino.tetris.sprite_group)
         self.image = tetromino.image
         self.rect = self.image.get_rect()
-
+        
+   
     def is_alive(self):
         if not self.alive:
             self.kill()
@@ -50,6 +51,17 @@ class Tetromino:
 
         self.landing = False
 
+    def get_ghost_positions(self):
+        ghost_positions = [block.pos for block in self.blocks]
+
+        while not self.is_collide([pos + vec(0, 1) for pos in ghost_positions]):
+            ghost_positions = [pos + vec(0, 1) for pos in ghost_positions]
+
+        # Retrocede una posición para corregir la colisión
+        ghost_positions = [pos - vec(0, 1) for pos in ghost_positions]
+
+        return ghost_positions
+    
     def rotate(self):
         if self.shape == "O":
             return

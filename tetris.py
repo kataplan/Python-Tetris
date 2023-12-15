@@ -176,4 +176,14 @@ class Tetris:
 
     def draw(self):
         self.draw_grid()
+        ghost_positions = self.tetromino.get_ghost_positions()
+        for pos in ghost_positions:
+            pg.draw.rect(
+                self.app.screen,
+                WHITE,  # Color del bloque fantasma
+                (pos.x * TILE_SIZE, (pos.y +1) * TILE_SIZE, TILE_SIZE, TILE_SIZE),
+                2,  # Grosor del contorno
+                2
+            )
+
         self.sprite_group.draw(self.app.screen)
