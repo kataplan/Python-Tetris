@@ -11,20 +11,23 @@ class App:
         pg.display.set_caption("Tetris")
         self.screen = pg.display.set_mode(WIN_RES)
         self.clock = pg.time.Clock()
-        self.set_timer()
         font = ft.Font(FONT_PATH)
         self.preview = Preview(font)
         self.tetris = Tetris(self)
+        self.set_timer()
         self.sidebar = Sidebar(self, font)
-        # self.text = Text(self)
 
     def set_timer(self):
         self.user_event = pg.USEREVENT + 0
         self.fast_user_event = pg.USEREVENT + 1
         self.anim_trigger = False
         self.fast_anim_trigger = False
-        pg.time.set_timer(self.user_event, ANIM_TIME_INTERVAL)
-        pg.time.set_timer(self.fast_user_event, FAST_ANIM_TIME_INTERVAL)
+        base_interval = 0.8  # milisegundos (0.8 segundos)
+        interval = int(
+            ((base_interval - (self.tetris.level - 1) * 0.007)) ** (self.tetris.level - 1)
+        ) * 1000
+        pg.time.set_timer(self.user_event, interval)
+        pg.time.set_timer(self.fast_user_event, int(interval / FAST_ANIM_TIME_MULT))
 
     def update(self):
         self.tetris.update()
@@ -36,7 +39,6 @@ class App:
         self.tetris.draw()
         self.preview.draw()
         self.sidebar.draw()
-        # self.text.draw()
         pg.display.flip()
 
     def check_events(self):
