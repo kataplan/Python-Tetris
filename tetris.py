@@ -1,5 +1,6 @@
 from re import S
 from settings import *
+from timer import *
 from tetromino import *
 import pygame.freetype as ft
 import pathlib
@@ -12,28 +13,45 @@ class Tetris:
         self.field_array = self.get_field_array()
         self.speed_up = False
 
-        #Hold Mechanic
+        # Hold Mechanic
         self.can_hold = True
         self.hold_piece = None
 
+        # Sprites
         self.default_sprites = self.load_block_images("default")
         self.remove_sprites = self.load_block_images("remove")
 
+        # 7 Bags
         self.current_bag = list(TETROMINOES.keys())
         random.shuffle(self.current_bag)
         self.next_bag = list(TETROMINOES.keys())
         random.shuffle(self.next_bag)
-
         self.next_shapes = [self.current_bag.pop(0) for _ in range(3)]
         self.app.preview.set_next_shapes(self.next_shapes)
 
         self.tetromino = self.create_new_tetromino()
 
+        # Score
         self.score = 0
-        self.level = 1
         self.full_lines = 0
+        self.level = 10
         self.lines_completed = 0
         self.points_per_line = {0: 0, 1: 100, 2: 300, 3: 500, 4: 800}
+
+        # Time
+        self.down_speed = ((0.8 - ((self.level - 1) * 0.007)) ** (self.level - 1))*1000
+        print(self.down_speed)
+        self.down_speed_faster = self.down_speed * 0.3
+        self.down_pressed = False
+        self.timers = {
+            "vertical move": Timer(self.down_speed, True, func=self.move_down),
+            "horizontal move": Timer(MOVE_WAIT_TIME),
+            "rotate": Timer(ROTATE_WAIT_TIME),
+        }
+        self.timers["vertical move"].activate()
+
+    def move_down(self):
+        self.tetromino.move(direction="down")
 
     def hold(self):
         if not self.hold_piece:
@@ -49,7 +67,6 @@ class Tetris:
             self.hold_piece = hold_piece
         self.can_hold = False
         self.app.sidebar.set_hold_shape(self.hold_piece)
-
 
     def get_score(self):
         self.score += self.points_per_line[self.full_lines] * self.level
@@ -71,7 +88,7 @@ class Tetris:
     def create_new_tetromino(self):
         shape = self.get_next_shape()
         return Tetromino(self, shape)
-    
+
     def create_hold_tetromino(self):
         shape = self.hold_piece
         return Tetromino(self, shape)
@@ -105,7 +122,9 @@ class Tetris:
                 self.lines_completed += 1
                 if self.lines_completed % 10 == 0:
                     self.level += 1
-                
+                    self.down_speed = ((0.8 - (self.level - 1) * 0.007) ** (self.level - 1))*1000
+                    self.down_speed_faster = self.down_speed * 0.3
+                    self.timers["vertical move"].duration = self.down_speed
 
     def put_tetromino_in_field_array(self):
         for block in self.tetromino.blocks:
@@ -129,21 +148,37 @@ class Tetris:
                 self.put_tetromino_in_field_array()
                 self.tetromino = self.create_new_tetromino()
 
+    def control(self):
+        keys = pg.key.get_pressed()
+        if not self.timers["horizontal move"].active:
+            if keys[pg.K_LEFT]:
+                self.tetromino.move(direction="left")
+                self.timers["horizontal move"].activate()
+            elif keys[pg.K_RIGHT]:
+                self.tetromino.move(direction="right")
+                self.timers["horizontal move"].activate()
 
-    def control(self, pressed_key):
-        if pressed_key == pg.K_LEFT:
-            self.tetromino.move(direction="left")
-        elif pressed_key == pg.K_RIGHT:
-            self.tetromino.move(direction="right")
-        elif pressed_key == pg.K_UP:
-            self.tetromino.rotate()
-        elif pressed_key == pg.K_DOWN:
-            self.speed_up = True
-        elif pressed_key == pg.K_SPACE:  # Barra espaciadora para hard drop
+        if not self.timers["rotate"].active:
+            if keys[pg.K_UP]:
+                self.tetromino.rotate()
+                self.timers["rotate"].activate()
+
+        if not self.down_pressed and keys[pg.K_DOWN]:
+            self.down_pressed = True
+            self.timers["vertical move"].duration = self.down_speed_faster
+        if self.down_pressed and not keys[pg.K_DOWN]:
+            self.down_pressed = False
+            self.timers["vertical move"].duration = self.down_speed
+
+        if keys[pg.K_SPACE]:
             self.hard_drop()
-        elif pressed_key == pg.K_LSHIFT or pressed_key == pg.K_c:
+        if keys[pg.K_LSHIFT] or keys[pg.K_c]:
             if self.can_hold:
                 self.hold()
+
+    def timer_update(self):
+        for timer in self.timers.values():
+            timer.update()
 
     def hard_drop(self):
         while not self.tetromino.landing:
@@ -166,12 +201,10 @@ class Tetris:
                 )
 
     def update(self):
-        trigger = [self.app.anim_trigger, self.app.fast_anim_trigger][self.speed_up]
-        if trigger:
-            self.tetromino.update()
-            self.check_full_lines()
-            self.check_tetromino_landing()
-            self.get_score()
+        self.timer_update()
+        self.check_full_lines()
+        self.check_tetromino_landing()
+        self.get_score()
         self.sprite_group.update()
 
     def draw(self):
@@ -181,9 +214,9 @@ class Tetris:
             pg.draw.rect(
                 self.app.screen,
                 WHITE,  # Color del bloque fantasma
-                (pos.x * TILE_SIZE, (pos.y +1) * TILE_SIZE, TILE_SIZE, TILE_SIZE),
+                (pos.x * TILE_SIZE, (pos.y + 1) * TILE_SIZE, TILE_SIZE, TILE_SIZE),
                 2,  # Grosor del contorno
-                2
+                2,
             )
 
         self.sprite_group.draw(self.app.screen)

@@ -88,5 +88,4 @@ class Tetromino:
     def is_collide(self, block_positions):
         return any(map(Block.is_collide, self.blocks, block_positions))
 
-    def update(self):
-        self.move(direction="down")
+

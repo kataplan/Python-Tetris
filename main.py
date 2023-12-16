@@ -14,20 +14,8 @@ class App:
         font = ft.Font(FONT_PATH)
         self.preview = Preview(font)
         self.tetris = Tetris(self)
-        self.set_timer()
         self.sidebar = Sidebar(self, font)
 
-    def set_timer(self):
-        self.user_event = pg.USEREVENT + 0
-        self.fast_user_event = pg.USEREVENT + 1
-        self.anim_trigger = False
-        self.fast_anim_trigger = False
-        base_interval = 0.8  # milisegundos (0.8 segundos)
-        interval = int(
-            ((base_interval - (self.tetris.level - 1) * 0.007)) ** (self.tetris.level - 1)
-        ) * 1000
-        pg.time.set_timer(self.user_event, interval)
-        pg.time.set_timer(self.fast_user_event, int(interval / FAST_ANIM_TIME_MULT))
 
     def update(self):
         self.tetris.update()
@@ -42,8 +30,6 @@ class App:
         pg.display.flip()
 
     def check_events(self):
-        self.anim_trigger = False
-        self.fast_anim_trigger = False
         for event in pg.event.get():
             if event.type == pg.quit or (
                 event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE
@@ -51,11 +37,8 @@ class App:
                 pg.quit()
                 sys.exit()
             elif event.type == pg.KEYDOWN:
-                self.tetris.control(pressed_key=event.key)
-            elif event.type == self.user_event:
-                self.anim_trigger = True
-            elif event.type == self.fast_user_event:
-                self.fast_anim_trigger = True
+                self.tetris.control()
+
 
     def run(self):
         while True:
