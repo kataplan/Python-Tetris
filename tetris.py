@@ -34,12 +34,17 @@ class Tetris:
         # Score
         self.score = 0
         self.full_lines = 0
-        self.level = 10
+        self.level = 1
         self.lines_completed = 0
+        self.combo_counter = -1
+        self.is_landed = False
+        self.is_row_eliminated = False
         self.points_per_line = {0: 0, 1: 100, 2: 300, 3: 500, 4: 800}
 
         # Time
-        self.down_speed = ((0.8 - ((self.level - 1) * 0.007)) ** (self.level - 1))*1000
+        self.down_speed = (
+            (0.8 - ((self.level - 1) * 0.007)) ** (self.level - 1)
+        ) * 1000
         print(self.down_speed)
         self.down_speed_faster = self.down_speed * 0.3
         self.down_pressed = False
@@ -106,6 +111,7 @@ class Tetris:
         return next_shape
 
     def check_full_lines(self):
+        lines_cleared = 0
         row = TETRIS_GRID_H - 1
         for y in range(TETRIS_GRID_H - 1, -1, -1):
             for x in range(TETRIS_GRID_W):
@@ -115,6 +121,7 @@ class Tetris:
             if sum(map(bool, self.field_array[y])) < TETRIS_GRID_W:
                 row -= 1
             else:
+                lines_cleared += 1
                 for x in range(TETRIS_GRID_W):
                     self.field_array[row][x].alive = False
                     self.field_array[row][x] = 0
@@ -122,9 +129,18 @@ class Tetris:
                 self.lines_completed += 1
                 if self.lines_completed % 10 == 0:
                     self.level += 1
-                    self.down_speed = ((0.8 - (self.level - 1) * 0.007) ** (self.level - 1))*1000
+                    self.down_speed = (
+                        (0.8 - (self.level - 1) * 0.007) ** (self.level - 1)
+                    ) * 1000
                     self.down_speed_faster = self.down_speed * 0.3
                     self.timers["vertical move"].duration = self.down_speed
+        if lines_cleared > 0:
+            self.is_row_eliminated = True
+            self.combo_counter += 1
+            score_reward = 50 * self.combo_counter * self.level
+            self.score += score_reward
+        else: 
+            self.is_row_eliminated = False
 
     def put_tetromino_in_field_array(self):
         for block in self.tetromino.blocks:
@@ -140,6 +156,7 @@ class Tetris:
 
     def check_tetromino_landing(self):
         if self.tetromino.landing:
+            self.is_landed = True
             if self.is_game_over():
                 self.__init__(self.app)
             else:
@@ -147,6 +164,8 @@ class Tetris:
                 self.can_hold = True
                 self.put_tetromino_in_field_array()
                 self.tetromino = self.create_new_tetromino()
+        else:
+            self.is_landed = False
 
     def control(self):
         keys = pg.key.get_pressed()
@@ -181,9 +200,12 @@ class Tetris:
             timer.update()
 
     def hard_drop(self):
+        count = 0
         while not self.tetromino.landing:
             self.tetromino.move("down")
-        self.check_tetromino_landing()
+            count += 1
+        self.is_landed = True
+        self.score += count * 2
 
     def draw_grid(self):
         for x in range(TETRIS_GRID_W):
@@ -202,9 +224,12 @@ class Tetris:
 
     def update(self):
         self.timer_update()
-        self.check_full_lines()
         self.check_tetromino_landing()
+        self.check_full_lines()
+        if self.is_landed and not self.is_row_eliminated:
+            self.combo_counter = -1
         self.get_score()
+        print(self.combo_counter)
         self.sprite_group.update()
 
     def draw(self):

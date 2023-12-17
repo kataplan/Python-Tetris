@@ -82,8 +82,11 @@ class Tetromino:
         if not is_collide:
             for block in self.blocks:
                 block.pos += move_direction
+            if self.tetris.down_pressed:
+                self.tetris.score +=1
         elif direction == "down":
             self.landing = True
+            
 
     def is_collide(self, block_positions):
         return any(map(Block.is_collide, self.blocks, block_positions))
