@@ -89,28 +89,28 @@ class Sidebar:
         self.font.render_to(
             self.menu_surface,
             (10, self.fragmet_height * 3 + TILE_SIZE*2),
-            text="Level",
-            fgcolor=WHITE,
-            size=TILE_SIZE * 1,
-        )
-        self.font.render_to(
-            self.menu_surface,
-            (10, self.fragmet_height * 3 + TILE_SIZE*3),
-            text=f"{self.app.tetris.level}",
-            fgcolor=WHITE,
-            size=TILE_SIZE * 0.9,
-        )
-        self.font.render_to(
-            self.menu_surface,
-            (10, self.fragmet_height * 3 + TILE_SIZE*4),
             text="Lines",
             fgcolor=WHITE,
             size=TILE_SIZE * 1,
         )
         self.font.render_to(
             self.menu_surface,
-            (10, self.fragmet_height * 3 + TILE_SIZE*5),
+            (10, self.fragmet_height * 3 + TILE_SIZE*3),
             text=f"{self.app.tetris.lines_completed}",
+            fgcolor=WHITE,
+            size=TILE_SIZE * 0.9,
+        )
+        self.font.render_to(
+            self.menu_surface,
+            (10, self.fragmet_height * 3 + TILE_SIZE*4),
+            text="Level",
+            fgcolor=WHITE,
+            size=TILE_SIZE * 1,
+        )
+        self.font.render_to(
+            self.menu_surface,
+            (10, self.fragmet_height * 3 + TILE_SIZE*5),
+            text=f"{self.app.tetris.level}",
             fgcolor=WHITE,
             size=TILE_SIZE * 0.9,
         )
