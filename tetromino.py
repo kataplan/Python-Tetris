@@ -90,6 +90,8 @@ class Tetromino:
         return ghost_positions
 
     def rotate(self, is_clock_wise):
+        self.tetris.app.sfx["rotate_piece"].set_volume(0.5)
+        self.tetris.app.sfx["rotate_piece"].play()
         if self.shape == "O":
             return
         pivot_pos = self.blocks[0].pos
@@ -136,6 +138,8 @@ class Tetromino:
         new_block_positions = [block.pos + move_direction for block in self.blocks]
         is_collide = self.is_collide(new_block_positions)
         if not is_collide:
+            if direction !="down":
+                self.tetris.app.sfx["move_piece"].play()
             for block in self.blocks:
                 block.pos += move_direction
             if self.tetris.down_pressed:

@@ -2,8 +2,8 @@ from re import S
 from settings import *
 from timer import *
 from tetromino import *
-import pygame.freetype as ft
 import pathlib
+import os
 
 
 class Tetris:
@@ -12,6 +12,11 @@ class Tetris:
         self.sprite_group = pg.sprite.Group()
         self.field_array = self.get_field_array()
         self.speed_up = False
+        # Music
+        
+        pg.mixer.music.load(os.path.join(os.getcwd(), 'assets/sounds/music/tetris_theme.wav'))
+
+        pg.mixer.music.play(-1)
 
         # Hold Mechanic
         self.can_hold = True
@@ -71,6 +76,7 @@ class Tetris:
             self.tetromino = Tetromino(self, self.hold_piece)
             self.hold_piece = hold_piece
         self.can_hold = False
+        self.app.sfx["move_piece"].play()
         self.app.sidebar.set_hold_shape(self.hold_piece)
 
     def load_block_images(self, folder):
@@ -124,6 +130,7 @@ class Tetris:
                 self.full_lines += 1
                 self.lines_completed += 1
                 if self.lines_completed % 10 == 0:
+                    self.app.sfx["level_up"].play()
                     self.level += 1
                     self.down_speed = (
                         (0.8 - (self.level - 1) * 0.007) ** (self.level - 1)
@@ -131,6 +138,10 @@ class Tetris:
                     self.down_speed_faster = self.down_speed * 0.3
                     self.timers["vertical move"].duration = self.down_speed
         if lines_cleared > 0:
+            if lines_cleared == 4:
+                self.app.sfx["tetris_4"].play()
+            else:
+                self.app.sfx["line_clear"].play()
             self.is_row_eliminated = True
             self.combo_counter += 1
             score_reward = 50 * self.combo_counter * self.level
@@ -155,14 +166,18 @@ class Tetris:
 
     def is_game_over(self):
         if self.tetromino.blocks[0].pos.y == INIT_POS_OFFSET[1]:
+            #pg.mixer.music.stop()
+            self.app.sfx["game_over"].play()
             return True
 
     def check_tetromino_landing(self):
         if self.tetromino.landing:
             self.is_landed = True
             if self.is_game_over():
+                self.app.sfx["game_over"].play()
                 self.__init__(self.app)
             else:
+                self.app.sfx["piece_landed"].play()
                 self.speed_up = False
                 self.can_hold = True
                 self.put_tetromino_in_field_array()

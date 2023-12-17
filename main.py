@@ -16,6 +16,17 @@ class App:
         self.tetris = Tetris(self)
         self.sidebar = Sidebar(self, font)
 
+        # SFX
+        self.sfx = {
+            "move_piece" :pg.mixer.Sound(os.path.join(os.getcwd(), 'assets/sounds/sfx/move_piece.wav')),
+            "rotate_piece" :pg.mixer.Sound(os.path.join(os.getcwd(), 'assets/sounds/sfx/rotate_piece.wav')),
+            "line_clear" :pg.mixer.Sound(os.path.join(os.getcwd(), 'assets/sounds/sfx/line_clear.wav')),
+            "level_up" :pg.mixer.Sound(os.path.join(os.getcwd(), 'assets/sounds/sfx/level_up.wav')),
+            "tetris_4" :pg.mixer.Sound(os.path.join(os.getcwd(), 'assets/sounds/sfx/tetris_4_lines.wav')),
+            "game_over" :pg.mixer.Sound(os.path.join(os.getcwd(), 'assets/sounds/sfx/game_over.wav')),
+            "piece_landed" :pg.mixer.Sound(os.path.join(os.getcwd(), 'assets/sounds/sfx/piece_landed.wav')),
+        }
+        
 
     def update(self):
         self.tetris.update()
@@ -38,7 +49,6 @@ class App:
                 sys.exit()
             elif event.type == pg.KEYDOWN:
                 self.tetris.control()
-
 
     def run(self):
         while True:
