@@ -40,12 +40,12 @@ class Tetris:
         self.is_landed = False
         self.is_row_eliminated = False
         self.points_per_line = {0: 0, 1: 100, 2: 300, 3: 500, 4: 800}
+        self.perfect_clear_bonus = {1: 800, 2: 1200, 3: 1800, 4: 2000}
 
         # Time
         self.down_speed = (
             (0.8 - ((self.level - 1) * 0.007)) ** (self.level - 1)
         ) * 1000
-        print(self.down_speed)
         self.down_speed_faster = self.down_speed * 0.3
         self.down_pressed = False
         self.timers = {
@@ -91,8 +91,8 @@ class Tetris:
         return images
 
     def create_new_tetromino(self):
-        shape = self.get_next_shape()
-        return Tetromino(self, shape)
+        #shape = self.get_next_shape()
+        return Tetromino(self, "I")
 
     def create_hold_tetromino(self):
         shape = self.hold_piece
@@ -139,7 +139,10 @@ class Tetris:
             self.combo_counter += 1
             score_reward = 50 * self.combo_counter * self.level
             self.score += score_reward
-        else: 
+            if self.check_perfect_clear():
+                perfect_clear_lines = lines_cleared
+                self.score += self.perfect_clear_bonus[perfect_clear_lines] * self.level
+        else:
             self.is_row_eliminated = False
 
     def put_tetromino_in_field_array(self):
@@ -222,6 +225,13 @@ class Tetris:
                     1,
                 )
 
+    def check_perfect_clear(self):
+        for y in range(TETRIS_GRID_H):
+            for x in range(TETRIS_GRID_W):
+                if self.field_array[y][x]:
+                    return False
+        return True
+
     def update(self):
         self.timer_update()
         self.check_tetromino_landing()
@@ -229,7 +239,6 @@ class Tetris:
         if self.is_landed and not self.is_row_eliminated:
             self.combo_counter = -1
         self.get_score()
-        print(self.combo_counter)
         self.sprite_group.update()
 
     def draw(self):
