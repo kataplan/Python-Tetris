@@ -5,7 +5,7 @@ import random
 
 
 class Block(pg.sprite.Sprite):
-    def __init__(self, tetromino, pos, shape):
+    def __init__(self, tetromino, pos):
         self.tetromino = tetromino
         self.pos = vec(pos) + INIT_POS_OFFSET
         self.alive = True
@@ -13,9 +13,34 @@ class Block(pg.sprite.Sprite):
         self.image = tetromino.image
         self.rect = self.image.get_rect()
 
+        self.sfx_image = self.image.copy()
+        self.sfx_image.set_alpha(110)
+        self.sfx_speed = random.uniform(0.2, 0.6)
+        self.sfx_cycles = random.randrange(6, 8)
+        self.sfx_duration = random.uniform(1.0, 2.0)  # Nueva línea
+
+        self.cycle_counter = 0
+
+    def sfx_end_time(self):
+        self.cycle_counter += 0.1
+        if self.cycle_counter > self.sfx_duration:  # Modificado
+            self.cycle_counter = 0
+            return True
+        return False  # Modificado
+
+    def sfx_run(self):
+        self.image = self.sfx_image
+        self.pos.y -= self.sfx_speed
+        self.image = pg.transform.rotate(
+            self.image, pg.time.get_ticks() * self.sfx_speed
+        )
+
     def is_alive(self):
         if not self.alive:
-            self.kill()
+            if not self.sfx_end_time():
+                self.sfx_run()
+            else:
+                self.kill()
 
     def rotate(self, pivot_pos, clockwise=True):
         translated = self.pos - pivot_pos
@@ -48,7 +73,7 @@ class Tetromino:
         self.shape = shape
         self.image = tetris.default_sprites[TETROMINOES_COLORS[shape]]
 
-        self.blocks = [Block(self, pos, shape) for pos in TETROMINOES[shape]]
+        self.blocks = [Block(self, pos) for pos in TETROMINOES[shape]]
 
         self.rotation_state = 0
         self.landing = False
