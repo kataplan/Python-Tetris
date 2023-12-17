@@ -1,3 +1,4 @@
+from xml.etree.ElementTree import QName
 from numpy import True_
 from settings import *
 import random
@@ -11,19 +12,19 @@ class Block(pg.sprite.Sprite):
         super().__init__(tetromino.tetris.sprite_group)
         self.image = tetromino.image
         self.rect = self.image.get_rect()
-        
-   
+
     def is_alive(self):
         if not self.alive:
             self.kill()
 
-    def rotate(self, pivot_poss):
-        translated = self.pos - pivot_poss
-        rotated = translated.rotate(90)
-        return rotated + pivot_poss
+    def rotate(self, pivot_pos, clockwise=True):
+        translated = self.pos - pivot_pos
+        angle = 90 if clockwise else -90
+        rotated = translated.rotate(angle)
+        return rotated + pivot_pos
 
     def set_rect_pos(self):
-        pos =  self.pos
+        pos = self.pos
         self.rect.topleft = pos * TILE_SIZE
 
     def update(self):
@@ -49,6 +50,7 @@ class Tetromino:
 
         self.blocks = [Block(self, pos, shape) for pos in TETROMINOES[shape]]
 
+        self.rotation_state = 0
         self.landing = False
 
     def get_ghost_positions(self):
@@ -61,19 +63,48 @@ class Tetromino:
         ghost_positions = [pos - vec(0, 1) for pos in ghost_positions]
 
         return ghost_positions
-    
-    def rotate(self):
+
+    def rotate(self, is_clock_wise):
         if self.shape == "O":
             return
         pivot_pos = self.blocks[0].pos
-        new_block_positions = [block.rotate(pivot_pos) for block in self.blocks]
-        if not self.is_collide(new_block_positions):
-            for i, block in enumerate(self.blocks):
-                block.pos = new_block_positions[i]
-        
+        new_block_positions = [
+            block.rotate(pivot_pos, is_clock_wise) for block in self.blocks
+        ]
+        new_rotation_state = self.get_new_rotation_state(is_clock_wise)
+        wall_kick_data = self.get_wall_kicks(
+            ROTATION_STATES[self.rotation_state],
+            ROTATION_STATES[new_rotation_state],
+        )
+        for kick_offset in wall_kick_data:
+            kicked_positions = [pos + kick_offset for pos in new_block_positions]
+            if not self.is_collide(kicked_positions):
+                for i, block in enumerate(self.blocks):
+                    block.pos = kicked_positions[i]
+                self.rotation_state = new_rotation_state
+                break
+
+    def get_new_rotation_state(self, is_clock_wise):
+        # Obtén el cambio de estado según la dirección de rotación
+        if is_clock_wise:
+            rotation_change = 1
+        else:
+            rotation_change = -1
+
+        # Calcula el nuevo estado de rotación sin modificar el atributo
+        new_rotation_state = (self.rotation_state + rotation_change) % 4
+
+        # Si el resultado es -1, conviértelo a 3
+        if new_rotation_state == -1:
+            new_rotation_state = 3
+
+        return new_rotation_state
+
     def get_wall_kicks(self, initial_state, final_state):
         key = f"{initial_state}{final_state}"
-        return WALL_KICKS.get(key, [])
+        if self.shape == "I":
+            return I_WALL_KICKS[key]
+        return JLSTZ_WALL_KICKS[key]
 
     def move(self, direction):
         move_direction = MOVE_DIRECTIONS[direction]
@@ -83,12 +114,9 @@ class Tetromino:
             for block in self.blocks:
                 block.pos += move_direction
             if self.tetris.down_pressed:
-                self.tetris.score +=1
+                self.tetris.score += 1
         elif direction == "down":
             self.landing = True
-            
 
     def is_collide(self, block_positions):
         return any(map(Block.is_collide, self.blocks, block_positions))
-
-

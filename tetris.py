@@ -73,10 +73,6 @@ class Tetris:
         self.can_hold = False
         self.app.sidebar.set_hold_shape(self.hold_piece)
 
-    def get_score(self):
-        self.score += self.points_per_line[self.full_lines] * self.level
-        self.full_lines = 0
-
     def load_block_images(self, folder):
         files = [
             item
@@ -91,8 +87,8 @@ class Tetris:
         return images
 
     def create_new_tetromino(self):
-        #shape = self.get_next_shape()
-        return Tetromino(self, "I")
+        shape = self.get_next_shape()
+        return Tetromino(self, shape)
 
     def create_hold_tetromino(self):
         shape = self.hold_piece
@@ -142,6 +138,10 @@ class Tetris:
             if self.check_perfect_clear():
                 perfect_clear_lines = lines_cleared
                 self.score += self.perfect_clear_bonus[perfect_clear_lines] * self.level
+            else:
+                self.score += self.points_per_line[self.full_lines] * self.level
+                self.full_lines = 0
+
         else:
             self.is_row_eliminated = False
 
@@ -182,7 +182,10 @@ class Tetris:
 
         if not self.timers["rotate"].active:
             if keys[pg.K_UP]:
-                self.tetromino.rotate()
+                self.tetromino.rotate(is_clock_wise=True)
+                self.timers["rotate"].activate()
+            elif keys[pg.K_z] or keys[pg.K_LCTRL]:
+                self.tetromino.rotate(is_clock_wise=False)
                 self.timers["rotate"].activate()
 
         if not self.down_pressed and keys[pg.K_DOWN]:
@@ -238,7 +241,6 @@ class Tetris:
         self.check_full_lines()
         if self.is_landed and not self.is_row_eliminated:
             self.combo_counter = -1
-        self.get_score()
         self.sprite_group.update()
 
     def draw(self):
