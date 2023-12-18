@@ -12,8 +12,8 @@ class Tetris:
         self.sprite_group = pg.sprite.Group()
         self.field_array = self.get_field_array()
         self.speed_up = False
-        # Music
         
+        # Music
         pg.mixer.music.load(os.path.join(os.getcwd(), 'assets/sounds/music/tetris_theme.wav'))
 
         pg.mixer.music.play(-1)
@@ -34,6 +34,7 @@ class Tetris:
         self.next_shapes = [self.current_bag.pop(0) for _ in range(3)]
         self.app.preview.set_next_shapes(self.next_shapes)
 
+        # Current tetromino
         self.tetromino = self.create_new_tetromino()
 
         # Score
@@ -166,7 +167,7 @@ class Tetris:
 
     def is_game_over(self):
         if self.tetromino.blocks[0].pos.y == INIT_POS_OFFSET[1]:
-            #pg.mixer.music.stop()
+            pg.mixer.music.stop()
             self.app.sfx["game_over"].play()
             return True
 
@@ -175,7 +176,7 @@ class Tetris:
             self.is_landed = True
             if self.is_game_over():
                 self.app.sfx["game_over"].play()
-                self.__init__(self.app)
+                self.app.game_start= False
             else:
                 self.app.sfx["piece_landed"].play()
                 self.speed_up = False

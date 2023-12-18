@@ -52,7 +52,7 @@ class Sidebar:
         self.hold_shape = shape
 
     def text_draw(self):
-        text_width, text_height = self.font.get_rect(
+        text_width, _ = self.font.get_rect(
             "TETRIS", size=TILE_SIZE * 1.7
         ).size
         text_x = (MENU_WIDTH - text_width) // 2
