@@ -25,6 +25,8 @@ Run the main script:
 python main.py
 ```
 
+If your game looks to big or small change the tile size in the constant `TILE_SIZE` in `settings.py`
+
 ## Controls 👾
 * ⬅️ and ➡️ arrow keys to move the pieces.
 * ⬆️ arrow key to rotate clock-wise.
