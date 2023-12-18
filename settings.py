@@ -2,48 +2,57 @@ import pygame as pg
 
 vec = pg.math.Vector2
 
-FPS = 60
+# Tile size in pixels
+TILE_SIZE = 20
 
-FAST_ANIM_TIME_MULT = 2
+# Padding
+PADDING = 10
 
-UPDATE_START_SPEED = 800
-MOVE_WAIT_TIME = 10
-ROTATE_WAIT_TIME = 10
-
+#Grid size in tiles
 TETRIS_GRID_W = 10
 TETRIS_GRID_H = 20
-TILE_SIZE = 32
 MENU_SIZE_W = 8
 BOTTOM_SIZE_H = 4
 
-TETRIS_WIDTH = TETRIS_GRID_W * TILE_SIZE
-TETRIS_HEIGHT = TETRIS_GRID_H * TILE_SIZE
-
-MENU_WIDTH = MENU_SIZE_W * TILE_SIZE
-MENU_HEIGHT = TETRIS_HEIGHT
-
-BOTTOM_WIDTH = TETRIS_WIDTH
+# Game classes sizes
+GAME_WIDTH = TETRIS_GRID_W * TILE_SIZE
+GAME_HEIGHT = TETRIS_GRID_H * TILE_SIZE
+SIDEBAR_WIDTH = MENU_SIZE_W * TILE_SIZE
+SIDEBAR_HEIGHT = GAME_HEIGHT
+BOTTOM_WIDTH = GAME_WIDTH
 BOTTOM_HEIGHT = BOTTOM_SIZE_H * TILE_SIZE
 
-GRID_SIZE = TETRIS_WIDTH, TETRIS_HEIGHT
+# Game Resolution
+GAME_SIZE = GAME_WIDTH, GAME_HEIGHT
 
-PADDING = 10
-
-WIN_WIDTH = GRID_SIZE[0] + MENU_WIDTH + PADDING
-WIN_HEIGHT = GRID_SIZE[1] + BOTTOM_HEIGHT + PADDING
+#Window Resolution
+WIN_WIDTH = GAME_SIZE[0] + SIDEBAR_WIDTH + PADDING
+WIN_HEIGHT = GAME_SIZE[1] + BOTTOM_HEIGHT + PADDING
 WIN_RES = WIN_WIDTH, WIN_HEIGHT
-GRID_START_W = WIN_WIDTH - TETRIS_WIDTH
-GRID_START_H = WIN_HEIGHT - TETRIS_HEIGHT
 
+# Game Time
+FPS = 60
+UPDATE_START_SPEED = 800
+MOVE_WAIT_TIME = 100
+ROTATE_WAIT_TIME = 100
+
+#Initial position Offset
+INIT_POS_OFFSET = vec((TETRIS_GRID_W // 2 - 1, 0))
+
+#PATH
 FONT_PATH = "assets/font/PixelGosub-ZaRz.ttf"
 SPRITE_BLOCK_PATH = "assets/sprites/blocks"
 SPRITE_TETROMINOES_PATH = "assets/sprites/tetrominoes"
 
-INIT_POS_OFFSET = vec((TETRIS_GRID_W // 2 - 1, 0))
-NEXT_POS_OFFSET = vec((TETRIS_GRID_W * 1.30, TETRIS_GRID_H * 0.280))
 
-MOVE_DIRECTIONS = {"left": vec(-1, 0), "right": vec(1, 0), "down": vec(0, 1)}
+# Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREY = (32, 32, 32)
+RED = (255, 0, 0)
 
+
+# Tetrominoes
 TETROMINOES = {
     "T": [(0, 0), (-1, 0), (1, 0), (0, -1)],
     "O": [(0, 0), (0, -1), (1, 0), (1, -1)],
@@ -54,12 +63,6 @@ TETROMINOES = {
     "Z": [(0, 0), (1, 0), (0, -1), (-1, -1)],
 }
 
-# COLORS
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREY = (32, 32, 32)
-
-
 TETROMINOES_COLORS = {
     "T": "MAGENTA",
     "O": "YELLOW",
@@ -69,6 +72,11 @@ TETROMINOES_COLORS = {
     "S": "GREEN",
     "Z": "RED",
 }
+
+# Movement
+MOVE_DIRECTIONS = {"left": vec(-1, 0), "right": vec(1, 0), "down": vec(0, 1)}
+
+# Rotation
 ROTATION_STATES = ["0", "R", "2", "L"]
 ROTATION_MAPPING = {"90": 1, "-90": -1}
 
