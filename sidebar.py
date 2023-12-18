@@ -7,10 +7,10 @@ class Sidebar:
     def __init__(self, app, font):
         self.app = app
         self.font = font
-        self.scale = 0.9
+        self.scale = (TILE_SIZE*0.9)/32
 
         self.display_surface = pg.display.get_surface()
-        self.menu_surface = pg.Surface((MENU_WIDTH, WIN_HEIGHT))
+        self.menu_surface = pg.Surface((SIDEBAR_WIDTH, WIN_HEIGHT))
         self.menu_rect = self.menu_surface.get_rect(topright=(WIN_WIDTH, 0))
 
         # shapes
@@ -27,6 +27,7 @@ class Sidebar:
 
     def display_hold_piece(self):
         if self.hold_shape:
+
             shape_surface = self.shape_sprites[self.hold_shape]
             scaled_surface = pg.transform.scale(
                 shape_surface,
@@ -37,7 +38,7 @@ class Sidebar:
             )
 
             rect = scaled_surface.get_rect(
-                center=(MENU_WIDTH // 2, self.fragmet_height + self.fragmet_height // 2)
+                center=(SIDEBAR_WIDTH // 2, self.fragmet_height + self.fragmet_height // 2)
             )
             self.menu_surface.blit(scaled_surface, rect)
 
@@ -47,7 +48,7 @@ class Sidebar:
         pg.draw.rect(
             self.menu_surface,
             WHITE,
-            (10, self.fragmet_height, MENU_WIDTH - 20, self.fragmet_height),
+            (10, self.fragmet_height, SIDEBAR_WIDTH - 20, self.fragmet_height),
             2,
         )
         self.text_draw()
@@ -62,7 +63,7 @@ class Sidebar:
         text_width, _ = self.font.get_rect(
             "TETRIS", size=TILE_SIZE * 1.7
         ).size
-        text_x = (MENU_WIDTH - text_width) // 2
+        text_x = (SIDEBAR_WIDTH - text_width) // 2
 
         self.font.render_to(
             self.menu_surface,

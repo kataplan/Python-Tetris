@@ -11,12 +11,12 @@ class Preview:
         self.display_surface = pg.display.get_surface()
         self.menu_surface = pg.Surface((BOTTOM_WIDTH, BOTTOM_HEIGHT))
         self.menu_rect = self.menu_surface.get_rect(
-            topleft=(0, TETRIS_HEIGHT + PADDING)
+            topleft=(0, GAME_HEIGHT + PADDING)
         )
 
         # shapes
         self.next_shapes = []
-        self.scale = 0.4
+        self.scale = (TILE_SIZE*0.4)/32
         self.shape_sprites = {
             shape: load(
                 path.join(SPRITE_TETROMINOES_PATH, f"{shape}.png")
