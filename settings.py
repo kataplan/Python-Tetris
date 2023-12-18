@@ -3,7 +3,7 @@ import pygame as pg
 vec = pg.math.Vector2
 
 # Tile size in pixels
-TILE_SIZE = 20
+TILE_SIZE = 32
 
 # Padding
 PADDING = 10
