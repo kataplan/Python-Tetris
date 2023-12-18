@@ -1,7 +1,5 @@
-from re import S
 from settings import *
 from pygame.image import load
-import pygame.freetype as ft
 from os import path
 
 
@@ -9,6 +7,7 @@ class Sidebar:
     def __init__(self, app, font):
         self.app = app
         self.font = font
+        self.scale = 0.9
 
         self.display_surface = pg.display.get_surface()
         self.menu_surface = pg.Surface((MENU_WIDTH, WIN_HEIGHT))
@@ -29,10 +28,18 @@ class Sidebar:
     def display_hold_piece(self):
         if self.hold_shape:
             shape_surface = self.shape_sprites[self.hold_shape]
-            rect = shape_surface.get_rect(
+            scaled_surface = pg.transform.scale(
+                shape_surface,
+                (
+                    int(shape_surface.get_width() * self.scale),
+                    int(shape_surface.get_height() * self.scale),
+                ),
+            )
+
+            rect = scaled_surface.get_rect(
                 center=(MENU_WIDTH // 2, self.fragmet_height + self.fragmet_height // 2)
             )
-            self.menu_surface.blit(shape_surface, rect)
+            self.menu_surface.blit(scaled_surface, rect)
 
     def draw(self):
         self.menu_surface.fill(GREY)
