@@ -1,5 +1,3 @@
-from xml.etree.ElementTree import QName
-from numpy import True_
 from settings import *
 import random
 

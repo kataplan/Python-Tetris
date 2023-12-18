@@ -1,4 +1,3 @@
-from re import S
 from settings import *
 from timer import *
 from tetromino import *
