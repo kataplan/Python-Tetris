@@ -23,8 +23,7 @@ class Tetris:
         self.hold_piece = None
 
         # Sprites
-        self.default_sprites = self.load_block_images("default")
-        self.remove_sprites = self.load_block_images("remove")
+        self.default_sprites = self.load_block_images()
 
         # 7 Bags
         self.current_bag = list(TETROMINOES.keys())
@@ -80,10 +79,10 @@ class Tetris:
         self.app.sfx["move_piece"].play()
         self.app.sidebar.set_hold_shape(self.hold_piece)
 
-    def load_block_images(self, folder):
+    def load_block_images(self):
         files = [
             item
-            for item in pathlib.Path(SPRITE_BLOCK_PATH + "/" + folder).rglob("*.png")
+            for item in pathlib.Path(SPRITE_BLOCK_PATH).rglob("*.png")
             if item.is_file()
         ]
         images = {file.stem: pg.image.load(file).convert_alpha() for file in files}
