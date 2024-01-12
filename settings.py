@@ -44,13 +44,11 @@ FONT_PATH = "assets/font/PixelGosub-ZaRz.ttf"
 SPRITE_BLOCK_PATH = "assets/sprites/blocks"
 SPRITE_TETROMINOES_PATH = "assets/sprites/tetrominoes"
 
-
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREY = (32, 32, 32)
 RED = (255, 0, 0)
-
 
 # Tetrominoes
 TETROMINOES = {

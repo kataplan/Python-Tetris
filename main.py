@@ -2,6 +2,7 @@ from settings import *
 from tetris import *
 from preview import *
 from sidebar import *
+import pygame.freetype as ft
 import sys
 
 
@@ -19,8 +20,8 @@ class App:
         self.tetris = Tetris(self)
         self.sidebar = Sidebar(self, self.font)
 
-        # SFX
-        self.sfx = {
+        # Sounds
+        self.soundbar = {
             "move_piece": pg.mixer.Sound(
                 os.path.join(os.getcwd(), "assets/sounds/sfx/move_piece.wav")
             ),
@@ -61,14 +62,14 @@ class App:
             ((WIN_WIDTH - game_over_width) // 2, (WIN_HEIGHT // 2) - TILE_SIZE),
             text="Game Over",
             fgcolor=RED,  # Rojo
-            size=TILE_SIZE * 2,
+            size=TILE_SIZE * 2.05,
         )
 
         # Render "Press 'r' to restart" text
         self.font.render_to(
             self.screen,
             ((WIN_WIDTH - restart_width) // 2, (WIN_HEIGHT // 2) + TILE_SIZE),
-            text="Press 'r' to restart.",
+            text="Press 'r' to restart",
             fgcolor=(255, 255, 255),  # Blanco
             size=TILE_SIZE,
         )

@@ -1,12 +1,16 @@
-from re import S
 from settings import *
 from pygame.image import load
-import pygame.freetype as ft
 from os import path
 
 
 class Preview:
     def __init__(self, font):
+        """
+        Initializes the Preview object.
+
+        Parameters:
+        - font: Font object for rendering text.
+        """
         self.font = font
         self.display_surface = pg.display.get_surface()
         self.menu_surface = pg.Surface((BOTTOM_WIDTH, BOTTOM_HEIGHT))
@@ -28,6 +32,13 @@ class Preview:
         self.fragmet_width = self.menu_surface.get_width() / 3
 
     def display_pieces(self, shapes):
+        """
+        Displays the preview of upcoming tetromino shapes.
+
+        Parameters:
+        - shapes: List of tetromino shapes to be displayed.
+        """
+        ...
         for i, shape in enumerate(shapes):
             shape_surface = self.shape_sprites[shape]
             scaled_surface = pg.transform.scale(
@@ -44,9 +55,18 @@ class Preview:
             self.menu_surface.blit(scaled_surface, rect)
 
     def set_next_shapes(self, next_shapes):
+        """
+        Sets the list of upcoming tetromino shapes.
+
+        Parameters:
+        - next_shapes: List of upcoming tetromino shapes.
+        """
         self.next_shapes = next_shapes
 
     def draw(self):
+        """
+        Draws the preview area on the game screen.
+        """
         self.menu_surface.fill(GREY)
         self.display_pieces(self.next_shapes)
         pg.draw.rect(
@@ -58,8 +78,11 @@ class Preview:
         )
         self.text_draw()
         self.display_surface.blit(self.menu_surface, self.menu_rect)
-
+    
     def text_draw(self):
+        """
+        Draws text elements in the preview area.
+        """
         self.font.render_to(
             self.menu_surface,
             (0, 0),

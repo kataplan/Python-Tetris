@@ -5,9 +5,16 @@ from os import path
 
 class Sidebar:
     def __init__(self, app, font):
+        """
+        Initializes the Sidebar object.
+
+        Parameters:
+        - app: Instance of the App class.
+        - font: Font object for rendering text.
+        """
         self.app = app
         self.font = font
-        self.scale = (TILE_SIZE*0.9)/32
+        self.scale = (TILE_SIZE * 0.9) / 32
 
         self.display_surface = pg.display.get_surface()
         self.menu_surface = pg.Surface((SIDEBAR_WIDTH, WIN_HEIGHT))
@@ -26,8 +33,10 @@ class Sidebar:
         self.fragmet_height = self.menu_surface.get_height() / 4
 
     def display_hold_piece(self):
+        """
+        Displays the currently held tetromino piece in the sidebar.
+        """
         if self.hold_shape:
-
             shape_surface = self.shape_sprites[self.hold_shape]
             scaled_surface = pg.transform.scale(
                 shape_surface,
@@ -38,11 +47,17 @@ class Sidebar:
             )
 
             rect = scaled_surface.get_rect(
-                center=(SIDEBAR_WIDTH // 2, self.fragmet_height + self.fragmet_height // 2)
+                center=(
+                    SIDEBAR_WIDTH // 2,
+                    self.fragmet_height + self.fragmet_height // 2,
+                )
             )
             self.menu_surface.blit(scaled_surface, rect)
 
     def draw(self):
+        """
+        Draws the sidebar on the game screen.
+        """
         self.menu_surface.fill(GREY)
         self.display_hold_piece()
         pg.draw.rect(
@@ -57,12 +72,19 @@ class Sidebar:
         pg.draw.rect(self.display_surface, WHITE, self.menu_rect, 2, 2)
 
     def set_hold_shape(self, shape):
+        """
+        Sets the currently held tetromino shape.
+
+        Parameters:
+        - shape: String representing the tetromino shape.
+        """
         self.hold_shape = shape
 
     def text_draw(self):
-        text_width, _ = self.font.get_rect(
-            "TETRIS", size=TILE_SIZE * 1.7
-        ).size
+        """
+        Draws text elements in the sidebar.
+        """
+        text_width, _ = self.font.get_rect("TETRIS", size=TILE_SIZE * 1.7).size
         text_x = (SIDEBAR_WIDTH - text_width) // 2
 
         self.font.render_to(
@@ -96,28 +118,28 @@ class Sidebar:
         )
         self.font.render_to(
             self.menu_surface,
-            (10, self.fragmet_height * 3 + TILE_SIZE*2),
+            (10, self.fragmet_height * 3 + TILE_SIZE * 2),
             text="Lines",
             fgcolor=WHITE,
             size=TILE_SIZE * 1,
         )
         self.font.render_to(
             self.menu_surface,
-            (10, self.fragmet_height * 3 + TILE_SIZE*3),
+            (10, self.fragmet_height * 3 + TILE_SIZE * 3),
             text=f"{self.app.tetris.lines_completed}",
             fgcolor=WHITE,
             size=TILE_SIZE * 0.9,
         )
         self.font.render_to(
             self.menu_surface,
-            (10, self.fragmet_height * 3 + TILE_SIZE*4),
+            (10, self.fragmet_height * 3 + TILE_SIZE * 4),
             text="Level",
             fgcolor=WHITE,
             size=TILE_SIZE * 1,
         )
         self.font.render_to(
             self.menu_surface,
-            (10, self.fragmet_height * 3 + TILE_SIZE*5),
+            (10, self.fragmet_height * 3 + TILE_SIZE * 5),
             text=f"{self.app.tetris.level}",
             fgcolor=WHITE,
             size=TILE_SIZE * 0.9,

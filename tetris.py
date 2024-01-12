@@ -7,6 +7,12 @@ import os
 
 class Tetris:
     def __init__(self, app):
+        """
+        Initializes the Tetris game.
+
+        Parameters:
+        - app: Instance of the App class.
+        """
         self.app = app
         self.sprite_group = pg.sprite.Group()
         self.field_array = self.get_field_array()
@@ -60,9 +66,15 @@ class Tetris:
         self.timers["vertical move"].activate()
 
     def move_down(self):
+        """
+        Moves the current tetromino down by one row.
+        """
         self.tetromino.move(direction="down")
 
     def hold(self):
+        """
+        Holds the current tetromino for later use and gets the next tetromino.
+        """
         if not self.hold_piece:
             # Si no hay pieza en retención, guarda la pieza actual y obtén la siguiente
             self.hold_piece = self.tetromino.shape
@@ -75,10 +87,13 @@ class Tetris:
             self.tetromino = Tetromino(self, self.hold_piece)
             self.hold_piece = hold_piece
         self.can_hold = False
-        self.app.sfx["move_piece"].play()
+        self.app.soundbar["move_piece"].play()
         self.app.sidebar.set_hold_shape(self.hold_piece)
 
     def load_block_images(self):
+        """
+        Loads block images for rendering tetromino blocks.
+        """
         files = [
             item
             for item in pathlib.Path(SPRITE_BLOCK_PATH).rglob("*.png")
@@ -92,14 +107,23 @@ class Tetris:
         return images
 
     def create_new_tetromino(self):
+        """
+        Creates a new random tetromino.
+        """
         shape = self.get_next_shape()
         return Tetromino(self, shape)
 
     def create_hold_tetromino(self):
+        """
+        Creates a tetromino based on the held tetromino shape.
+        """
         shape = self.hold_piece
         return Tetromino(self, shape)
 
     def get_next_shape(self):
+        """
+        Gets the next tetromino shape in the sequence.
+        """
         next_shape = self.next_shapes.pop(0)
         next_in_bag = self.current_bag.pop(0)
         self.next_shapes.append(next_in_bag)
@@ -112,6 +136,9 @@ class Tetris:
         return next_shape
 
     def check_full_lines(self):
+        """
+        Checks and clears full lines in the game grid.
+        """
         lines_cleared = 0
         row = TETRIS_GRID_H - 1
         for y in range(TETRIS_GRID_H - 1, -1, -1):
@@ -129,7 +156,7 @@ class Tetris:
                 self.full_lines += 1
                 self.lines_completed += 1
                 if self.lines_completed % 10 == 0:
-                    self.app.sfx["level_up"].play()
+                    self.app.soundbar["level_up"].play()
                     self.level += 1
                     self.down_speed = (
                         (0.8 - (self.level - 1) * 0.007) ** (self.level - 1)
@@ -138,9 +165,9 @@ class Tetris:
                     self.timers["vertical move"].duration = self.down_speed
         if lines_cleared > 0:
             if lines_cleared == 4:
-                self.app.sfx["tetris_4"].play()
+                self.app.soundbar["tetris_4"].play()
             else:
-                self.app.sfx["line_clear"].play()
+                self.app.soundbar["line_clear"].play()
             self.is_row_eliminated = True
             self.combo_counter += 1
             score_reward = 50 * self.combo_counter * self.level
@@ -156,27 +183,42 @@ class Tetris:
             self.is_row_eliminated = False
 
     def put_tetromino_in_field_array(self):
+        """
+        Places the tetromino blocks in the game grid array.
+        """
         for block in self.tetromino.blocks:
             x, y = int(block.pos.x), int(block.pos.y)
             self.field_array[y][x] = block
 
     def get_field_array(self):
+        """
+        Initializes the game grid array.
+        """
         return [[0 for x in range(TETRIS_GRID_W)] for y in range(TETRIS_GRID_H)]
 
     def is_game_over(self):
+        """
+        Checks if the game is over.
+
+        Returns:
+        - True if the game is over, False otherwise.
+        """
         if self.tetromino.blocks[0].pos.y == INIT_POS_OFFSET[1]:
             pg.mixer.music.stop()
-            self.app.sfx["game_over"].play()
+            self.app.soundbar["game_over"].play()
             return True
 
     def check_tetromino_landing(self):
+        """
+        Checks if the current tetromino has landed on the bottom or on other blocks.
+        """
         if self.tetromino.landing:
             self.is_landed = True
             if self.is_game_over():
-                self.app.sfx["game_over"].play()
+                self.app.soundbar["game_over"].play()
                 self.app.game_start= False
             else:
-                self.app.sfx["piece_landed"].play()
+                self.app.soundbar["piece_landed"].play()
                 self.speed_up = False
                 self.can_hold = True
                 self.put_tetromino_in_field_array()
@@ -185,6 +227,9 @@ class Tetris:
             self.is_landed = False
 
     def control(self):
+        """
+        Handles user input for controlling the tetromino.
+        """
         keys = pg.key.get_pressed()
         if not self.timers["horizontal move"].active:
             if keys[pg.K_LEFT]:
@@ -216,10 +261,16 @@ class Tetris:
                 self.hold()
 
     def timer_update(self):
+        """
+        Updates the game timers.
+        """
         for timer in self.timers.values():
             timer.update()
 
     def hard_drop(self):
+        """
+        Performs a hard drop, making the tetromino fall to the lowest possible position.
+        """
         count = 0
         while not self.tetromino.landing:
             self.tetromino.move("down")
@@ -228,6 +279,9 @@ class Tetris:
         self.score += count * 2
 
     def draw_grid(self):
+        """
+        Draws the game grid on the screen.
+        """
         for x in range(TETRIS_GRID_W):
             for y in range(TETRIS_GRID_H):
                 pg.draw.rect(
@@ -243,6 +297,9 @@ class Tetris:
                 )
 
     def check_perfect_clear(self):
+        """
+        Checks if the game grid is completely clear.
+        """
         for y in range(TETRIS_GRID_H):
             for x in range(TETRIS_GRID_W):
                 if self.field_array[y][x]:
@@ -250,6 +307,9 @@ class Tetris:
         return True
 
     def update(self):
+        """
+        Updates the game state.
+        """
         self.timer_update()
         self.check_tetromino_landing()
         self.check_full_lines()
@@ -258,6 +318,9 @@ class Tetris:
         self.sprite_group.update()
 
     def draw(self):
+        """
+        Draws the game elements on the screen.
+        """
         self.draw_grid()
         ghost_positions = self.tetromino.get_ghost_positions()
         for pos in ghost_positions:

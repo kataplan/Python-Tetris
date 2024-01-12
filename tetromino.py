@@ -4,6 +4,13 @@ import random
 
 class Block(pg.sprite.Sprite):
     def __init__(self, tetromino, pos):
+        """
+        Initializes a block within a tetromino.
+
+        Parameters:
+        - tetromino: The Tetromino instance to which the block belongs.
+        - pos: Initial position of the block.
+        """
         self.tetromino = tetromino
         self.pos = vec(pos) + INIT_POS_OFFSET
         self.alive = True
@@ -15,11 +22,17 @@ class Block(pg.sprite.Sprite):
         self.sfx_image.set_alpha(110)
         self.sfx_speed = random.uniform(0.2, 0.6)
         self.sfx_cycles = random.randrange(6, 8)
-        self.sfx_duration = random.uniform(1.0, 2.0)  # Nueva línea
+        self.sfx_duration = random.uniform(1.0, 2.0)
 
         self.cycle_counter = 0
 
     def sfx_end_time(self):
+        """
+        Checks if the special effect (sfx) duration has ended.
+
+        Returns:
+        - True if the duration has ended, False otherwise.
+        """
         self.cycle_counter += 0.1
         if self.cycle_counter > self.sfx_duration:  # Modificado
             self.cycle_counter = 0
@@ -88,8 +101,8 @@ class Tetromino:
         return ghost_positions
 
     def rotate(self, is_clock_wise):
-        self.tetris.app.sfx["rotate_piece"].set_volume(0.5)
-        self.tetris.app.sfx["rotate_piece"].play()
+        self.tetris.app.soundbar["rotate_piece"].set_volume(0.5)
+        self.tetris.app.soundbar["rotate_piece"].play()
         if self.shape == "O":
             return
         pivot_pos = self.blocks[0].pos
@@ -137,7 +150,7 @@ class Tetromino:
         is_collide = self.is_collide(new_block_positions)
         if not is_collide:
             if direction !="down":
-                self.tetris.app.sfx["move_piece"].play()
+                self.tetris.app.soundbar["move_piece"].play()
             for block in self.blocks:
                 block.pos += move_direction
             if self.tetris.down_pressed:
